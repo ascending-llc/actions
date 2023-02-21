@@ -1,0 +1,35 @@
+name: "Update Cloudformation Stackset"
+description: "Updates and deploys stackset to AWS CloudFormation"
+inputs:
+  stackset_name:
+    description: "Name of the stackset"
+    required: true
+  role_to_assume:
+    description: "Arn of the role to assume using OIDC"
+    required: true
+  region:
+    description: "Region to deploy to (Default: us-east-1)"
+    default: us-east-1
+  template_body:
+    description: "Location of the stacksets body"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ inputs.role_to_assume }}
+        aws-region: ${{ inputs.region }}
+    - name: Deploy StackSet
+      shell: bash
+      run: |
+        val=$(aws cloudformation describe-stack-set --stack-set-name ${{ inputs.stackset_name }} --output text)
+
+        if [[ $val == "" ]]
+        then
+        aws cloudformation create-stack-set --stack-set-name ${{ inputs.stackset_name }} --template-body file://${{ inputs.template_body }} --capabilties CAPABILITY_NAMED_IAM
+        else
+        aws cloudformation update-stack-set --stack-set-name ${{ inputs.stackset_name }} --template-body file://${{ inputs.template_body }} --capabilities CAPABILITY_NAMED_IAM
+        fi
