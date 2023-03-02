@@ -13,7 +13,9 @@ inputs:
   template_body:
     description: "Location of the stacksets body"
     required: true
-
+  params:
+    description: "Parameters to load into the stackset"
+    
 runs:
   using: composite
   steps:
@@ -29,7 +31,7 @@ runs:
 
         if [[ $val == "" ]]
         then
-        aws cloudformation create-stack-set --stack-set-name ${{ inputs.stackset_name }} --template-body file://${{ inputs.template_body }} --capabilties CAPABILITY_NAMED_IAM
+        aws cloudformation create-stack-set --stack-set-name ${{ inputs.stackset_name }} --template-body file://${{ inputs.template_body }} --capabilties CAPABILITY_NAMED_IAM --parameters ${{ inputs.params }}
         else
-        aws cloudformation update-stack-set --stack-set-name ${{ inputs.stackset_name }} --template-body file://${{ inputs.template_body }} --capabilities CAPABILITY_NAMED_IAM
+        aws cloudformation update-stack-set --stack-set-name ${{ inputs.stackset_name }} --template-body file://${{ inputs.template_body }} --capabilities CAPABILITY_NAMED_IAM --parameters ${{ inputs.params }}
         fi
