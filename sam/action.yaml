@@ -1,0 +1,42 @@
+name: "Update Sam Template"
+description: "Composite action for deploying/updating a sam application"
+inputs:
+  location:
+    description: "Location of the sam template"
+    required: true
+  sam_package_config:
+    description: "All params for packaging the template, only for use with sam_config"
+  sam_config:
+    description: "All required params for deploying template, by default it will look for samconfig.toml"
+    default: "true"
+  region:
+    description: "AWS Region to deploy to (Defult: us-east-1)"
+    default: "us-east-1"
+  role_to_assume:
+    description: "Role to assume when deploying the sam template"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Setup sam
+      uses: aws-actions/setup-sam@v2
+      with:
+        use-installer: true
+    - name: Deploy PermissionSetResources Stackset
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: ${{ inputs.region }}
+        role-to-assume: ${{ inputs.role_to_assume }}
+    - name: Deploy sam
+      shell: bash
+      run: |
+        if [[ ${{ inputs.sam_config }} == "true" ]]
+        then
+        sam build && sam deploy
+        else
+        sam package ${{ inputs.sam_package_config }}
+        sam deploy ${{ inputs.sam_config }}
+        fi
