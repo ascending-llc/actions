@@ -39,9 +39,11 @@ runs:
       shell: bash
       working-directory: ${{ inputs.location }}
       run: |
+        sam --version
+        sam --info
         if [[ ${{ inputs.sam_config }} == "true" ]]
         then
-        sam build && sam deploy
+        sam build && sam deploy --debug
         else
         sam package ${{ inputs.sam_package_config }}
         sam deploy ${{ inputs.sam_config }}
