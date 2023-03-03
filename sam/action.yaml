@@ -19,6 +19,10 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
     - name: Setup sam
       uses: aws-actions/setup-sam@v2
       with:
