@@ -28,7 +28,7 @@ runs:
         python-version: ${{ inputs.python_v }}
     - name: Setup sam
       uses: aws-actions/setup-sam@v2
-    - name: Deploy PermissionSetResources Stackset
+    - name: Get Creds
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-region: ${{ inputs.region }}
