@@ -1,9 +1,6 @@
 name: "Update Sam Template"
 description: "Composite action for deploying/updating a sam application"
 inputs:
-  location:
-    description: "Location of the sam template"
-    required: true
   sam_package_config:
     description: "All params for packaging the template, only for use with sam_config"
   sam_config:
