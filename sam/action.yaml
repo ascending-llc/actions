@@ -24,6 +24,8 @@ runs:
   steps:
     - name: Setup sam
       uses: aws-actions/setup-sam@v2
+      with:
+        use-installer: true
     - name: Get Creds
       uses: aws-actions/configure-aws-credentials@v1
       with:
