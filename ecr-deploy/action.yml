@@ -36,4 +36,4 @@ runs:
       run: |
         docker build -t $REPOSITORY .
         docker tag $REPOSITORY:latest $REGISTRY/$REPOSITORY:latest
-        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        docker push $REGISTRY/$REPOSITORY:latest
