@@ -11,6 +11,9 @@ inputs:
   region:
     description: "The region of the ecr repo (Default: us-east-1)"
     default: us-east-1
+  location:
+    description: "Location of a directory containing the Dockerfile"
+    required: true
 
 runs:
   using: composite
@@ -25,6 +28,7 @@ runs:
       id: login-ecr
     - name: Build, tag, and push image to ECR
       shell: bash
+      working-directory: ${{ inputs.location }}
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         REPOSITORY: ${{ inputs.repository }}
