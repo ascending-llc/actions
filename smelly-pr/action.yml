@@ -21,6 +21,8 @@ runs:
         cd smelly-python
         git checkout fix/16
         pip install .
+        cd ..
+        ls
     - name: Install deps
       shell: bash
       run: |
