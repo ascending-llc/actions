@@ -16,12 +16,17 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.8.13"
+    - name: Install Pipenv
+      shell: bash
+      run: pip install pipenv
     - name: Get New Version
       shell: bash
       run: |
         git clone https://github.com/NathanCFoster/smelly-python.git
         cd smelly-python
         git checkout fix/16
+        pipenv lock
+        pipenv requirements > requirements.txt
         pip install -r requirements.txt
         pip install .
         cd ..
