@@ -29,7 +29,6 @@ runs:
         pipenv requirements > requirements.txt
         pip install -r requirements.txt
         pip install .
-        ls
         cd ..
         ls
     - name: Generate Report from smelly-python
