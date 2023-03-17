@@ -28,7 +28,7 @@ runs:
     - name: Install deps
       shell: bash
       run: |
-        pip install pipenv dominate
+        pip install pipenv dominate click
     - name: Generate Report from smelly-python
       shell: bash
       run: pipenv run smelly-python -d src
