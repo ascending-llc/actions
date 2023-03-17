@@ -45,7 +45,7 @@ runs:
       run: echo "pr_number=`gh pr view ${GITHUB_REF_NAME} --json number -q '.number'`" >> $GITHUB_ENV
     - name: Delete old comments
       if: ${{ env.pr_number != '' }}
-      uses: maheshrayas/actions-pr-comment-delete@v1
+      uses: maheshrayas/action-pr-comment-delete@v1
       with:
         github_token: ${{ inputs.token }}
         org: ${{ github.repository_owner }}
