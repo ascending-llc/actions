@@ -27,7 +27,7 @@ runs:
         pip install pipenv dominate
     - name: Generate Report from smelly-python
       shell: bash
-      run: pipenv run semlly-python -d src
+      run: pipenv run smelly-python -d src
     - name: Save output folder with html report
       uses: actions/upload-artifact@v3
       with:
