@@ -1,0 +1,60 @@
+name: Smelly Python Fix
+description: Fix for the smelly python action
+inputs:
+  dir:
+    description: Directory to run smelly-python in
+    default: '.'
+  token:
+    description: GitHub token
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.8.13"
+    - name: Get New Version
+      shell: bash
+      run: |
+        git clone https://github.com/NathanCFoster/smelly-python.git
+        cd smelly-python
+        git checkout fix/16
+        pip install .
+    - name: Install deps
+      shell: bash
+      run: |
+        pip install pipenv dominate
+    - name: Generate Report from smelly-python
+      shell: bash
+      run: pipenv run semlly-python -d src
+    - name: Save output folder with html report
+      uses: actions/upload-artifact@v3
+      with:
+        name: smelly-python-html-report
+        path: |
+          ${{ github.workspace }}/report/smelly_python/**/*
+          !${{ github.workspace }}/report/smelly_python/**/*.md
+    - name: Set job summary
+      shell: bash
+      run: cat ${{ github.workspace }}/report/smelly_python/comment.md >> $GITHUB_STEP_SUMMARY
+    - name: Get PR number
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      run: echo "pr_number=`gh pr view ${GITHUB_REF_NAME} --json number -q '.number'`" >> $GITHUB_ENV
+    - name: Delete old comments
+      if: ${{ env.pr_number != '' }}
+      uses: maheshrayas/actions-pr-comment-delete@v1
+      with:
+        github_token: ${{ inputs.token }}
+        org: ${{ github.repository_owner }}
+        repo: ${{ github.event.repository.name }}
+        user: github-actions[bot]
+        issue: ${{ env.pr_number }}
+    - name: Post Comment
+      if: ${{ env.pr_number != '' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      run: gh pr comment ${GITHUB_REF_NAME} -F ${{ github.workspace }}/report/smelly_python/comment.md
