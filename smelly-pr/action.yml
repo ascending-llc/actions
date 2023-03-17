@@ -10,6 +10,8 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Get Space
+      uses: easimon/maximize-build-space@master
     - name: Setup python
       uses: actions/setup-python@v4
       with:
@@ -29,6 +31,8 @@ runs:
         pip install .
         cd ..
         ls
+    - name: Checkout
+      uses: actions/checkout@v3
     - name: Generate Report from smelly-python
       shell: bash
       run: pipenv run smelly-python -d src
