@@ -10,6 +10,8 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Get Space
+      uses: easimon/maximize-build-space@master
     - name: Setup python
       uses: actions/setup-python@v4
       with:
