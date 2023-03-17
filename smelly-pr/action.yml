@@ -29,10 +29,8 @@ runs:
         pipenv requirements > requirements.txt
         pip install -r requirements.txt
         pip install .
-        cd ..
+        cd ../build
         ls
-    - name: Checkout
-      uses: actions/checkout@v3
     - name: Generate Report from smelly-python
       shell: bash
       run: pipenv run smelly-python -d src
