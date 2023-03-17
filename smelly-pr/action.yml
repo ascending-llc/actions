@@ -2,8 +2,8 @@ name: Smelly Python Fix
 description: Fix for the smelly python action
 inputs:
   dir:
-    description: Directory to run smelly-python in
-    default: '.'
+    description: "Directory to run smelly-python in (Default: Src)"
+    default: 'src'
   token:
     description: GitHub token
     required: true
