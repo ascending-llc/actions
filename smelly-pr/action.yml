@@ -41,6 +41,7 @@ runs:
         name: smelly-python-html-report
         path: |
           ${{ github.workspace }}/report/smelly_python/**/*
+          ${{ github.workspace }}/report/smelly_python/**/full_data.md
           !${{ github.workspace }}/report/smelly_python/**/*.md
     - name: Set job summary
       shell: bash
