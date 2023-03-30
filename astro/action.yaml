@@ -1,0 +1,37 @@
+name: "Deploy Astro to AWS"
+description: "Deploys Astro Site to aws using S3 and CloudFront"
+
+inputs:
+  role_to_assume:
+    description: "The arn of the role to assume"
+    required: true
+  region:
+    description: "AWS region to deploy to "
+    default: "us-east-1"
+  bucket:
+    description: "Bucket to deploy to"
+    required: true
+  distribution_id:
+    description: "Id of the CloudFront distribution to invalidate"
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: ${{ inputs.role_to_assume }}
+        aws-region: ${{ inputs.region }}
+    - name: Install modules
+      shell: bash
+      run: npm ci
+    - name: Build
+      shell: bash
+      run: npm run build
+    - name: Copy files to s3
+      shell: bash
+      run: aws s3 cp dist/ s3://${{ inputs.bucket }} --recursive
+    - name: Invalidate
+      shell: bash
+      run: aws cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }}
