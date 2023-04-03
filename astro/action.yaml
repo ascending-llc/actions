@@ -8,8 +8,8 @@ inputs:
   region:
     description: "AWS region to deploy to "
     default: "us-east-1"
-  bucket:
-    description: "Bucket to deploy to"
+  bucket_path:
+    description: "Bucket and bucket path to deploy to"
     required: true
   distribution_id:
     description: "Id of the CloudFront distribution to invalidate"
@@ -31,7 +31,7 @@ runs:
       run: npm run build
     - name: Copy files to s3
       shell: bash
-      run: aws s3 cp dist/ s3://${{ inputs.bucket }} --recursive
+      run: aws s3 cp dist/ s3://${{ inputs.bucket_path }} --recursive
     - name: Invalidate
       shell: bash
       run: aws cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/"
