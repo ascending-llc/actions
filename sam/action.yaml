@@ -41,5 +41,5 @@ runs:
         sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
         else
         sam package ${{ inputs.sam_package_config }} ${{ inputs.config_env }}
-        sam deploy ${{ inputs.sam_config }} --no-confirm-changeset --no-fail-on-empty-changeset
+        sam deploy ${{ inputs.sam_config }} ${{ inputs.config_env }} --no-confirm-changeset --no-fail-on-empty-changeset
         fi
