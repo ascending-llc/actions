@@ -34,4 +34,4 @@ runs:
       run: aws s3 cp dist/ s3://${{ inputs.bucket }} --recursive
     - name: Invalidate
       shell: bash
-      run: aws cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }}
+      run: aws cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/"
