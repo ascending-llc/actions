@@ -81,6 +81,9 @@ Deploys a SAM template using the specified parameters. Requires OIDC connection.
 - python_v
     - Python version to use when deploying the template
     - Default: `3.8`
+- config_env
+    - Environment in samconfig.toml to deploy to
+    - Only required if samconfig.toml doesn't contain default parameters
 
 ## Ecr deploy
 
