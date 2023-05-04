@@ -18,6 +18,9 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Test Actions
+      shell: bash
+      run: echo ${{ github.ref_name }}
     - name: Setup AWS
       uses: aws-actions/configure-aws-credentials@v1
       with:
