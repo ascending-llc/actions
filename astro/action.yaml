@@ -29,6 +29,9 @@ runs:
     - name: Build
       shell: bash
       run: npm run build:${{ github.ref_name }}
+    - name: Remove prev files
+      shell: bash
+      run: aws s3 rm s3://${{ inputs.bucket_path }} --recursive
     - name: Copy files to s3
       shell: bash
       run: aws s3 cp dist/ s3://${{ inputs.bucket_path }} --recursive --acl public-read
