@@ -37,4 +37,4 @@ runs:
       run: aws s3 cp dist/ s3://${{ inputs.bucket_path }} --recursive --acl public-read
     - name: Invalidate
       shell: bash
-      run: aws cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/"
+      run: aws cloudfront create-invalidation --distribution-id ${{ inputs.distribution_id }} --paths "/*"
