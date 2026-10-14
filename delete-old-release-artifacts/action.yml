@@ -1,0 +1,93 @@
+name: "Delete Old Release Artifacts"
+description: "Strips assets from old releases while keeping the latest N releases and a grace period intact"
+author: "your-username"
+
+inputs:
+  keep-latest:
+    description: "Number of most recent releases to always fully protect"
+    required: false
+    default: "10"
+  max-age-days:
+    description: "Only strip assets from releases older than this many days (and outside keep-latest)"
+    required: false
+    default: "90"
+  dry-run:
+    description: "Preview only, no deletions"
+    required: false
+    default: "true"
+  token:
+    description: "GitHub token with contents:write permission"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/github-script@v9
+      with:
+        github-token: ${{ inputs.token }}
+        script: |
+          const keepLatest = parseInt('${{ inputs.keep-latest }}', 10);
+          const maxAgeDays = parseFloat('${{ inputs.max-age-days }}');
+          const dryRun = '${{ inputs.dry-run }}' === 'true';
+
+          const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000;
+          const now = Date.now();
+
+          const releases = await github.paginate(
+            github.rest.repos.listReleases,
+            { owner: context.repo.owner, repo: context.repo.repo, per_page: 100 }
+          );
+
+          releases.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+          const toKeep = releases.slice(0, keepLatest);
+          const candidates = releases.slice(keepLatest);
+
+          core.info(`Total releases: ${releases.length}`);
+          core.info(`Always protected (newest ${keepLatest}): ${toKeep.map(r => r.tag_name).join(', ') || '(none)'}`);
+          core.info(`Evaluating ${candidates.length} older release(s) against ${maxAgeDays}d age threshold...`);
+
+          let deletedCount = 0;
+
+          for (const release of candidates) {
+            const age = now - new Date(release.created_at).getTime();
+            const ageDays = (age / 86400000).toFixed(1);
+
+            if (age <= maxAgeMs) {
+              core.info(`${release.tag_name}: within grace period (${ageDays}d old), skipping.`);
+              continue;
+            }
+
+            if (!release.assets || release.assets.length === 0) {
+              core.info(`${release.tag_name}: ${ageDays}d old, no assets to remove, skipping.`);
+              continue;
+            }
+
+            for (const asset of release.assets) {
+              core.info(
+                `${dryRun ? '[DRY RUN] Would delete asset' : 'Deleting asset'}: ` +
+                `${asset.name} (${(asset.size / 1024).toFixed(1)} KB) from release ${release.tag_name} (${ageDays}d old)`
+              );
+
+              if (!dryRun) {
+                await github.rest.repos.deleteReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  asset_id: asset.id,
+                });
+                deletedCount++;
+              }
+            }
+          }
+
+          core.setOutput('deleted-count', deletedCount);
+          core.summary
+            .addHeading('Release Artifact Cleanup')
+            .addTable([
+              [{data: 'Setting', header: true}, {data: 'Value', header: true}],
+              ['Keep latest', String(keepLatest)],
+              ['Max age (days)', String(maxAgeDays)],
+              ['Dry run', String(dryRun)],
+              ['Assets deleted', String(deletedCount)],
+            ])
+            .write();
