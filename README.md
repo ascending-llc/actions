@@ -87,7 +87,7 @@ Deploys a SAM template using the specified parameters. Requires OIDC connection.
 
 ## Ecr deploy
 
-This uses the OIDC Provider deployed in the cloudformation template to package and deploy and new changes to the specified ecr repo.
+This uses the OIDC Provider deployed in the cloudformation template to package and deploy any new changes to the specified ecr repo.
 
 ## Stacksets
 
